@@ -20,7 +20,7 @@ import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import org.gradle.integtests.fixtures.AvailableJavaHomes
 import spock.lang.IgnoreIf
 
-class SharedJavaInstallationRegistryIntegrationTest extends AbstractIntegrationSpec {
+class JavaInstallationRegistryIntegrationTest extends AbstractIntegrationSpec {
 
     def "installation registry has no installations without environment setup or auto-detection"() {
         buildFile << """
