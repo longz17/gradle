@@ -37,7 +37,7 @@ Some plugins will break with this new version of Gradle, for example because the
 == Upgrading from 6.8
 === Changes in the IDE integration
 
-===== Changes in the IDEA model
+==== Changes in the IDEA model
 
 The `getGeneratedSourceDirectories()` and `getGeneratedTestDirectories()` methods are removed from the `IdeaContentRoot` interface.
 Clients should replace these invocations with `getSourceDirectories()` and `getTestDirectories()` and use the `isGenerated()` method on the returned instances.
@@ -74,7 +74,7 @@ You should migrate to the `maven-publish` or `ivy-publish` plugin instead.
 Please refer to the <<publishing_maven.adoc#publishing_maven, documentation of the Maven Publish plugin>> for publishing on Maven repositories.
 Please refer to the <<publishing_ivy.adoc#publishing_ivy, documentation of the Ivy Publish plugin>> for publishing on Ivy repositories.
 
-==== The Play plugins have been removed
+==== Removal of Play Framework plugins
 
 The deprecated Play plugins have been removed.
 An external replacement, the link:https://gradle.github.io/playframework[Play Framework plugin], is available from the plugin portal.
@@ -130,6 +130,19 @@ You can use link:{javadocPath}/org/gradle/api/DefaultTask.html[DefaultTask] inst
 `BuildListener.buildStarted(Gradle)` was deprecated in Gradle 6.0 and is now removed in Gradle 7.0.
 Please use link:{javadocPath}/org/gradle/BuildListener.html#beforeSettings-org.gradle.api.initialization.Settings-[BuildListener.beforeSettings(Settings)] instead.
 
+==== Removal of unused `StartParameter` APIs
+
+The following APIs, which were not usable via command line options anymore since Gradle 5.0, are now removed:
+`StartParameter.useEmptySettings()`, `StartParameter.isUseEmptySettings()`, `StartParameter.setSearchUpwards(boolean)` and `StartParameter.isSearchUpwards()`.
+
+==== Removal of searching for settings files in 'master' directories
+
+Gradle no longer supports discovering the settings file in a directory named `master` in a sibling directory.
+If your build still uses this deprecated feature, consider refactoring the build to have the root directory match the physical root of the project hierarchy.
+You can find more information about <<multi_project_builds.adoc#,how to structure a Gradle build>> or a <<structuring_software_products.adoc#,composition of builds>> in the user manual.
+Alternatively, you can still run tasks in builds like this by invoking the build from the `master` directory only using a
+<<intro_multi_project_builds.adoc#sec:executing_tasks_by_fully_qualified_name,fully qualified path to the task>>.
+
 ==== `modularity.inferModulePath` defaults to 'true'
 
 <<java_library_plugin.adoc#sec:java_library_modular,Compiling>>,
@@ -142,6 +155,12 @@ If this is causing issues in cases you manually configure the module path, or us
 ==== Removal of `ValidateTaskProperties`
 
 The `ValidateTaskProperties` task has been removed and replaced by the link:{javadocPath}/org/gradle/plugin/devel/tasks/ValidatePlugins.html task.
+
+==== Removal of `ImmutableFileCollection`
+
+The `ImmutableFileCollection` type has been removed.
+Use the link:{javadocPath}/org/gradle/api/file/ProjectLayout.html#files-java.lang.Object...- factory method instead.
+A handle to the project layout can be obtained via link:{javadocPath}/org/gradle/api/Project.html#getLayout--.
 
 === Deprecations
 
@@ -209,6 +228,15 @@ Publishing a component which has a dependency on an enforced platform now trigge
 enforced platforms use cases should be limited to applications, not things which can be consumed from another library or an application.
 
 If, for some reason, you still want to publish components with dependencies on enforced platforms, you can disable the validation following the <<publishing_setup.adoc#sec:suppressing_validation_errors, documentation>>.
+
+==== Changing default excludes during the execution phase
+
+Gradle's file trees apply some default exclude patterns for convenience — the same defaults as Ant in fact.
+See the <<working_with_files.adoc#sec:file_trees,user manual>> for more information.
+Sometimes, Ant's default excludes prove problematic, for example when you want to include the `.gitignore` in an archive file.
+
+Changing Gradle's default excludes during the execution phase can lead to correctness problems with up-to-date checks.
+As a consequence, you are only allowed to change Gradle's default excludes in the settings script, see the <<working_with_files.adoc#sec:change_default_excludes,user manual>> for an example.
 
 === Deprecations
 

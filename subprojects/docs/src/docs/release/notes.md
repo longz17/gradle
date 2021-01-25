@@ -8,10 +8,11 @@ Include only their name, impactful features should be called out separately belo
  [Some person](https://github.com/some-person)
 -->
 
-[Martin d'Anjou](https://github.com/martinda)
-[Till Krullmann](https://github.com/tkrullmann)
-[Andreas Axelsson](https://github.com/judgeaxl)
-[Pedro Tôrres](https://github.com/t0rr3sp3dr0)
+[Martin d'Anjou](https://github.com/martinda),
+[Till Krullmann](https://github.com/tkrullmann),
+[Andreas Axelsson](https://github.com/judgeaxl),
+[Pedro Tôrres](https://github.com/t0rr3sp3dr0),
+[Stefan Oehme](https://github.com/oehme),
 
 ## Upgrade Instructions
 
@@ -142,6 +143,10 @@ It is no longer required to activate the functionality using `java.modularity.in
 
 [Dependency verification](userguide/dependency_verification.html) is promoted to a stable feature.
 
+### Java Toolchain
+
+[Java Toolchains](userguide/toolchains.html) is promoted to a stable feature.
+
 ### Changing the priority of the daemon process
 
 Changing the [priority of the daemon process](userguide/command_line_interface.html#sec:command_line_performance) with `--priority` is now a stable feature.
@@ -219,6 +224,7 @@ In Gradle 7.0 we moved the following classes or methods out of incubation phase.
     - [Build Caching](userguide/build_cache.html)
         - org.gradle.normalization.RuntimeClasspathNormalization.metaInf(Action)
         - org.gradle.normalization.MetaInfNormalization
+        - org.gradle.caching.BuildCacheKey.toByteArray
     - Reporting
         - org.gradle.api.reporting.Report.getOutputLocation()
         - org.gradle.api.reporting.Report.getRequired()
@@ -249,6 +255,17 @@ In Gradle 7.0 we moved the following classes or methods out of incubation phase.
         - org.gradle.api.file.FileType
         - org.gradle.api.model.ReplacedBy
         - org.gradle.api.Task.getTimeout
+        - org.gradle.process.JavaDebugOptions
+        - org.gradle.process.JavaForkOptions.getDebugOptions()
+        - org.gradle.process.JavaForkOptions.debugOptions(Action)
+        - org.gradle.api.tasks.WorkResult.or
+        - org.gradle.api.tasks.IgnoreEmptyDirectories
+        - org.gradle.api.tasks.TaskInputFilePropertyBuilder.ignoreEmptyDirectories()
+        - org.gradle.api.tasks.TaskInputFilePropertyBuilder.ignoreEmptyDirectories(boolean)
+        - org.gradle.normalization.PropertiesFileNormalization
+        - org.gradle.normalization.RuntimeClasspathNormalization.properties(java.lang.String, org.gradle.api.Action<? super org.gradle.normalization.PropertiesFileNormalization>)
+        - org.gradle.normalization.RuntimeClasspathNormalization.properties(org.gradle.api.Action<? super org.gradle.normalization.PropertiesFileNormalization>)
+        - org.gradle.api.file.DuplicatesStrategy.INHERIT
 - Dependency management
     - Dependency notations
         - org.gradle.api.artifacts.dsl.DependencyHandler.enforcedPlatform(java.lang.Object)
@@ -353,6 +370,9 @@ In Gradle 7.0 we moved the following classes or methods out of incubation phase.
         - org.gradle.tooling.model.eclipse.EclipseWorkspace
         - org.gradle.tooling.model.eclipse.EclipseWorkspaceProject
         - org.gradle.tooling.model.eclipse.RunClosedProjectBuildDependencies
+        - org.gradle.tooling.model.eclipse.EclipseExternalDependency.isResolved()
+        - org.gradle.tooling.model.eclipse.EclipseExternalDependency.getAttemptedSelector()
+        - org.gradle.tooling.model.ComponentSelector
     - Testing events
         - org.gradle.tooling.events.OperationType.TestOutput
         - org.gradle.tooling.events.test.Destination
@@ -361,7 +381,14 @@ In Gradle 7.0 we moved the following classes or methods out of incubation phase.
     - Miscellaneous
         - org.gradle.tooling.events.OperationCompletionListener
         - org.gradle.tooling.events.configuration.ProjectConfigurationProgressEvent
+    - Debugging
+        - org.gradle.tooling.TestLauncher.withTaskAndTestClasses(String, Iterable)
+        - org.gradle.tooling.TestLauncher.withTaskAndTestMethods(String, String, Iterable)
+        - org.gradle.tooling.TestLauncher.debugTestsOn(int)
 - Java Ecosystem
+    - Antlr plugin
+        - org.gradle.api.plugins.antlr.AntlrTask.getStableSources
+        - org.gradle.api.plugins.antlr.AntlrTask.execute
     - Java plugins
         - org.gradle.api.file.SourceDirectorySet.getDestinationDirectory()
         - org.gradle.api.file.SourceDirectorySet.getClassesDirectory()
@@ -383,6 +410,8 @@ In Gradle 7.0 we moved the following classes or methods out of incubation phase.
         - org.gradle.api.tasks.SourceSetOutput.getGeneratedSourcesDirs()
         - org.gradle.api.tasks.compile.CompileOptions.getGeneratedSourceOutputDirectory()
         - org.gradle.api.tasks.compile.CompileOptions.getRelease()
+        - org.gradle.api.tasks.compile.JavaCompile.getStableSources
+        - org.gradle.api.tasks.compile.JavaCompile.compile(org.gradle.work.InputChanges)
     - Java Module System
         - org.gradle.api.jvm.ModularitySpec
         - org.gradle.api.plugins.JavaApplication.getMainModule()
@@ -401,6 +430,23 @@ In Gradle 7.0 we moved the following classes or methods out of incubation phase.
         - org.gradle.process.JavaExecSpec.getMainClass()
         - org.gradle.process.JavaExecSpec.getMainModule()
         - org.gradle.process.JavaExecSpec.getModularity()
+    - Java Toolchains
+        - org.gradle.api.tasks.JavaExec.getJavaLauncher()
+        - org.gradle.api.tasks.compile.JavaCompile.getJavaCompiler()
+        - org.gradle.api.tasks.javadoc.Javadoc.getJavadocTool()
+        - org.gradle.api.tasks.testing.Test.getJavaLauncher()
+        - org.gradle.jvm.toolchain.JavaCompiler
+        - org.gradle.jvm.toolchain.JavaInstallationMetadata
+        - org.gradle.jvm.toolchain.JavaLanguageVersion
+        - org.gradle.jvm.toolchain.JavaLauncher
+        - org.gradle.jvm.toolchain.JavaToolchainService
+        - org.gradle.jvm.toolchain.JavaToolchainSpec
+        - org.gradle.jvm.toolchain.JavadocTool
+        - org.gradle.jvm.toolchain.JvmImplementation
+        - org.gradle.jvm.toolchain.JvmVendorSpec
+        - org.gradle.api.plugins.JavaPluginExtension.toolchain(action)
+        - org.gradle.api.plugins.JavaPluginExtension.getToolchain()
+        - org.gradle.api.tasks.compile.GroovyCompile.getJavaLauncher()
     - Testing
         - org.gradle.api.plugins.JavaTestFixturesPlugin
         - org.gradle.api.tasks.testing.JUnitXmlReport.getMergeReruns()
@@ -416,6 +462,7 @@ In Gradle 7.0 we moved the following classes or methods out of incubation phase.
         - org.gradle.api.tasks.compile.GroovyCompile.getSourceClassesMappingFile()
         - org.gradle.api.tasks.compile.GroovyCompileOptions.isParameters()
         - org.gradle.api.tasks.compile.GroovyCompileOptions.setParameters(boolean)
+        - org.gradle.api.tasks.compile.GroovyCompile.getStableSources
     - Scala
         - org.gradle.api.plugins.scala.ScalaBasePlugin.SCALA_COMPILER_PLUGINS_CONFIGURATION_NAME
         - org.gradle.api.plugins.scala.ScalaPluginExtension

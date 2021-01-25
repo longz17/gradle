@@ -18,7 +18,6 @@ import gradlebuild.testing.TestType
 import gradlebuild.integrationtests.addDependenciesAndConfigurations
 import gradlebuild.integrationtests.addSourceSet
 import gradlebuild.integrationtests.configureIde
-import gradlebuild.integrationtests.createTasks
 import gradlebuild.integrationtests.createTestTask
 
 plugins {
@@ -29,15 +28,36 @@ plugins {
 
 val sourceSet = addSourceSet(TestType.CROSSVERSION)
 addDependenciesAndConfigurations(TestType.CROSSVERSION.prefix)
-createTasks(sourceSet, TestType.CROSSVERSION)
+createQuickFeedbackTasks()
 createAggregateTasks(sourceSet)
 configureIde(TestType.CROSSVERSION)
 configureTestFixturesForCrossVersionTests()
 
 fun configureTestFixturesForCrossVersionTests() {
-    if (name != "test") {
+    // do not attempt to find projects when the plugin is applied just to generate accessors
+    if (project.name != "gradle-kotlin-dsl-accessors" && project.name != "test" /* remove once wrapper is updated */) {
         dependencies {
             "crossVersionTestImplementation"(testFixtures(project(":tooling-api")))
+        }
+    }
+}
+
+fun createQuickFeedbackTasks() {
+    val testType = TestType.CROSSVERSION
+    val defaultExecuter = "embedded"
+    val prefix = testType.prefix
+    testType.executers.forEach { executer ->
+        val taskName = "$executer${prefix.capitalize()}Test"
+        val testTask = createTestTask(taskName, executer, sourceSet, testType) {
+            this.systemProperties["org.gradle.integtest.versions"] = "latest"
+            this.systemProperties["org.gradle.integtest.crossVersion"] = "true"
+            this.useJUnitPlatform {
+                includeEngines("cross-version-test-engine")
+            }
+        }
+        if (executer == defaultExecuter) {
+            // The test task with the default executer runs with 'check'
+            tasks.named("check").configure { dependsOn(testTask) }
         }
     }
 }
@@ -55,13 +75,14 @@ fun createAggregateTasks(sourceSet: SourceSet) {
 
     val releasedVersions = moduleIdentity.releasedVersions.forUseAtConfigurationTime().getOrNull()
     releasedVersions?.allTestedVersions?.forEach { targetVersion ->
-        val crossVersionTest = createTestTask(
-            "gradle${targetVersion.version}CrossVersionTest", "forking", sourceSet, TestType.CROSSVERSION,
-            Action {
-                this.description = "Runs the cross-version tests against Gradle ${targetVersion.version}"
-                this.systemProperties["org.gradle.integtest.versions"] = targetVersion.version
+        val crossVersionTest = createTestTask("gradle${targetVersion.version}CrossVersionTest", "forking", sourceSet, TestType.CROSSVERSION) {
+            this.description = "Runs the cross-version tests against Gradle ${targetVersion.version}"
+            this.systemProperties["org.gradle.integtest.versions"] = targetVersion.version
+            this.systemProperties["org.gradle.integtest.crossVersion"] = "true"
+            this.useJUnitPlatform {
+                includeEngines("cross-version-test-engine")
             }
-        )
+        }
 
         allVersionsCrossVersionTests.configure { dependsOn(crossVersionTest) }
         if (targetVersion in releasedVersions.mainTestedVersions) {

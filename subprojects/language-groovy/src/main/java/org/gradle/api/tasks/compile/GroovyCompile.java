@@ -19,7 +19,6 @@ package org.gradle.api.tasks.compile;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import org.gradle.api.Incubating;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -222,7 +221,6 @@ public class GroovyCompile extends AbstractCompile implements HasCompileOptions 
      *
      * @since 5.6
      */
-    @Incubating
     @SkipWhenEmpty
     @IgnoreEmptyDirectories
     @PathSensitive(PathSensitivity.RELATIVE) // Java source files are supported, too. Therefore we should care about the relative path.
@@ -432,7 +430,6 @@ public class GroovyCompile extends AbstractCompile implements HasCompileOptions 
      * @return the java launcher property
      * @since 6.8
      */
-    @Incubating
     @Nested
     @Optional
     public Property<JavaLauncher> getJavaLauncher() {

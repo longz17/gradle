@@ -16,26 +16,25 @@
 
 package org.gradle.launcher.daemon.fixtures
 
-
 import org.gradle.api.specs.Spec
-import org.gradle.integtests.fixtures.MultiVersionSpecRunner
+import org.gradle.integtests.fixtures.compatibility.MultiVersionTest
 import org.gradle.integtests.fixtures.daemon.DaemonIntegrationSpec
 import org.gradle.internal.jvm.JavaInfo
 import org.gradle.internal.jvm.inspection.JvmInstallationMetadata
-import org.gradle.util.EmptyStatement
 import org.gradle.util.VersionNumber
+import org.junit.Assume
 import org.junit.Rule
 import org.junit.rules.TestRule
 import org.junit.runner.Description
-import org.junit.runner.RunWith
 import org.junit.runners.model.Statement
 
 import static org.gradle.integtests.fixtures.AvailableJavaHomes.getAvailableJdk
 
-@RunWith(MultiVersionSpecRunner)
+@MultiVersionTest
 class DaemonMultiJdkIntegrationTest extends DaemonIntegrationSpec {
     static def version
-    @Rule IgnoreIfJdkNotFound ignoreRule = new IgnoreIfJdkNotFound()
+    @Rule
+    IgnoreIfJdkNotFound ignoreRule = new IgnoreIfJdkNotFound()
 
     JavaInfo jdk
 
@@ -50,18 +49,21 @@ class DaemonMultiJdkIntegrationTest extends DaemonIntegrationSpec {
                 @Override
                 boolean isSatisfiedBy(JvmInstallationMetadata install) {
                     if (version.hasProperty("vendor")) {
-                        if(install.getVendor().getKnownVendor() != version.vendor) {
+                        def actualVendor = install.getVendor().getKnownVendor()
+                        def expectedVendor = version.vendor
+                        if (actualVendor != expectedVendor) {
                             return false
                         }
                     }
-                    return install.languageVersion == version.version
+                    def actualVersion = install.languageVersion.majorVersion
+                    def expectedVersion = version.version
+                    return actualVersion == expectedVersion
                 }
             })
 
-            if (jdk != null) {
-                return base
-            } else {
-                return EmptyStatement.INSTANCE
+            return {
+                Assume.assumeTrue("$version.vendor JDK $version.version not found.", jdk != null)
+                base.evaluate()
             }
         }
     }
